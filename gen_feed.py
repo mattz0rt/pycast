@@ -15,15 +15,18 @@ def upload_blob(source_file_name, bucket_name='pycast', destination_blob_name=No
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
     if blob.exists():
-        return blob.self_link
+        return blob.public_url
 
+    print("Uploading {} to {}".format(source_file_name, destination_blob_name))
     blob.upload_from_filename(source_file_name)
 
     print('File {} uploaded to {}.'.format(
         source_file_name,
         destination_blob_name))
+
+    blob.make_public()
     
-    return blob.self_link
+    return blob.public_url
 
 def sorted_ls(path):
     mtime = lambda f: os.stat(f).st_mtime
