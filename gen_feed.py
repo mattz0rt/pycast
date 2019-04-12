@@ -30,7 +30,7 @@ def upload_blob(source_file_name, bucket_name='pycast', destination_blob_name=No
 
 def sorted_ls(path):
     mtime = lambda f: os.stat(f).st_mtime
-    return list(sorted(glob(path), key=mtime, reverse=True))
+    return list(sorted(glob(path), key=mtime))
 
 if __name__ == '__main__':
     fg = FeedGenerator()
