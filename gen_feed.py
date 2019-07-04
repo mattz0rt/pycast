@@ -4,6 +4,7 @@ from google.cloud import storage
 from glob import glob
 import urlparse
 import os
+import click
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(os.path.dirname(__file__), 'API Project-dd4536b2c838.json')
 
@@ -32,7 +33,10 @@ def sorted_ls(path):
     mtime = lambda f: os.stat(f).st_mtime
     return list(sorted(glob(path), key=mtime))
 
-if __name__ == '__main__':
+@click.command()
+@click.argument('audio_dir')
+@click.argument('out')
+def main(audio_dir, out):
     fg = FeedGenerator()
     fg.load_extension('podcast')
     
@@ -41,7 +45,7 @@ if __name__ == '__main__':
     fg.description('A personal feed')
     fg.podcast.itunes_category('Technology', 'Podcasting')
     
-    for mp3 in sorted_ls('audio/*.mp3'):
+    for mp3 in sorted_ls(os.path.join(audio_dir, '*.mp3')):
         mp3_url = upload_blob(mp3)
         fe = fg.add_entry()
         mp3_meta = EasyID3(mp3)
@@ -52,4 +56,7 @@ if __name__ == '__main__':
         fe.enclosure(mp3_url, 0, 'audio/mpeg')
     
     fg.rss_str(pretty=True)
-    fg.rss_file('podcast.xml')
+    fg.rss_file(out)
+    
+if __name__ == '__main__':
+    main()
