@@ -1,1 +1,3 @@
 feedgen
+mutagen
+google-cloud-storage
