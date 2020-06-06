@@ -36,13 +36,15 @@ def sorted_ls(path):
 @click.command()
 @click.argument('audio_dir')
 @click.argument('out')
-def main(audio_dir, out):
+@click.argument('title')
+@click.argument('description')
+def main(audio_dir, out, title='mattz0rt\'s personal feed', description='A personal feed'):
     fg = FeedGenerator()
     fg.load_extension('podcast')
     
-    fg.title('mattz0rt\'s personal feed')
+    fg.title(title)
     fg.link(href='https://github.com/mattz0rt/pycast', rel='alternate')
-    fg.description('A personal feed')
+    fg.description(description)
     fg.podcast.itunes_category('Technology', 'Podcasting')
     
     for mp3 in sorted_ls(os.path.join(audio_dir, '*.mp3')):
