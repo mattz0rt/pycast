@@ -30,8 +30,9 @@ def upload_blob(source_file_name, bucket_name='pycast', destination_blob_name=No
     return blob.public_url
 
 def sorted_ls(path):
-    mtime = lambda f: os.stat(f).st_mtime
-    return list(sorted(glob(path), key=mtime))
+    # mtime = lambda f: os.stat(f).st_mtime
+    # return list(sorted(glob(path), key=mtime))
+    return list(sorted(glob(path)))
 
 @click.command()
 @click.argument('audio_dir')
@@ -46,6 +47,19 @@ def main(audio_dir, out, title='mattz0rt\'s personal feed', description='A perso
     fg.link(href='https://github.com/mattz0rt/pycast', rel='alternate')
     fg.description(description)
     fg.podcast.itunes_category('Technology', 'Podcasting')
+
+    all_legit = True
+    for mp3 in sorted_ls(os.path.join(audio_dir, '*.mp3')):
+        mp3_meta = EasyID3(mp3)
+        if 'title' not in mp3_meta:
+            print("{} is missing a title".format(mp3))
+            all_legit = False
+        if 'artist' not in mp3_meta:
+            print('{} is missing an artist'.format(mp3))
+            all_legit = False
+
+    if not all_legit:
+        return
     
     for mp3 in sorted_ls(os.path.join(audio_dir, '*.mp3')):
         mp3_url = upload_blob(mp3)
