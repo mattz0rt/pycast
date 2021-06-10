@@ -48,26 +48,26 @@ def main(audio_dir, out, title='mattz0rt\'s personal feed', description='A perso
     fg.description(description)
     fg.podcast.itunes_category('Technology', 'Podcasting')
 
-    all_legit = True
+    mp3_info = []
     for mp3 in sorted_ls(os.path.join(audio_dir, '*.mp3')):
         mp3_meta = EasyID3(mp3)
         if 'title' not in mp3_meta:
-            print("{} is missing a title".format(mp3))
-            all_legit = False
+            mp3_title = os.path.basename(mp3)
+        else:
+            mp3_title = mp3_meta['title'][0]
         if 'artist' not in mp3_meta:
-            print('{} is missing an artist'.format(mp3))
-            all_legit = False
+            mp3_desc = ''
+        else:
+            mp3_desc = 'by ' + mp3_meta['artist'][0]
+        mp3_info.append((mp3, mp3_title, mp3_desc))
 
-    if not all_legit:
-        return
-    
-    for mp3 in sorted_ls(os.path.join(audio_dir, '*.mp3')):
+    for mp3,mp3_title,mp3_desc in mp3_info:
         mp3_url = upload_blob(mp3)
         fe = fg.add_entry()
         mp3_meta = EasyID3(mp3)
         fe.id(mp3_url)
-        fe.title(mp3_meta['title'][0])
-        fe.description('by ' + mp3_meta['artist'][0])
+        fe.title(mp3_title)
+        fe.description(mp3_desc)
         fe.link(href=mp3_url)
         fe.enclosure(mp3_url, 0, 'audio/mpeg')
     
